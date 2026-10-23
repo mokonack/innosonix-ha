@@ -1,0 +1,49 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Enter the host name or IP address of your Innosonix amplifier.",
+        "data": {
+          "host": "Host",
+          "api_key": "API key"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to the device."
+    },
+    "abort": {
+      "already_configured": "The device is already configured."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "model": {
+        "name": "Model"
+      },
+      "serial_number": {
+        "name": "Serial number"
+      },
+      "software_revision": {
+        "name": "Software revision"
+      },
+      "channel_count": {
+        "name": "Channel count"
+      }
+    },
+    "binary_sensor": {
+      "device_error": {
+        "name": "Device error"
+      },
+      "device_warning": {
+        "name": "Device warning"
+      },
+      "amp": {
+        "name": "Amplifier enabled"
+      },
+      "mute": {
+        "name": "Muted"
+      }
+    }
+  }
+}

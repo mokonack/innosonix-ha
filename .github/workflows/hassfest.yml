@@ -1,0 +1,18 @@
+name: "Hassfest Validation"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * *"
+  push:
+    paths:
+      - ".github/workflows/hassfest.yml"
+      - "custom_components/innosonix/**"
+
+jobs:
+  hassfest:
+    name: "Hassfest Validation"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "home-assistant/actions/hassfest@master"

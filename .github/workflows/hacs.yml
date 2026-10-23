@@ -1,0 +1,19 @@
+name: "Hacs Validation"
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    paths:
+      - ".github/workflows/hacs.yml"
+
+jobs:
+  hacs:
+    name: "HACS"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "hacs/action@main"
+        with:
+          category: "integration"
