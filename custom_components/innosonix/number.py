@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import aiohttp
 
-from homeassistant.components.number import NumberEntity, NumberMode
+from homeassistant.components.number import NumberEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
@@ -34,7 +34,6 @@ class InnosonixChannelVolume(
     _attr_native_min_value = VOLUME_MIN
     _attr_native_max_value = VOLUME_MAX
     _attr_native_step = VOLUME_STEP
-    _attr_mode = NumberMode.FLOAT
     _attr_native_unit_of_measurement = "dB"
 
     def __init__(

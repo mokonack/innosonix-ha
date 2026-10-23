@@ -12,7 +12,7 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, VOLTAGE
+from homeassistant.const import PERCENTAGE, UnitOfElectricPotential
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -52,7 +52,7 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         translation_key="psu_voltage",
         device_class=SensorDeviceClass.VOLTAGE,
         state_class=SensorStateClass.MEASUREMENT,
-        native_unit_of_measurement=VOLTAGE,
+        native_unit_of_measurement=UnitOfElectricPotential.VOLT,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(

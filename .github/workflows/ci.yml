@@ -1,0 +1,26 @@
+name: "CI - Integration checks"
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  check:
+    name: "Compile, structure, and import"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: "actions/checkout@v4"
+      - uses: "actions/setup-python@v5"
+        with:
+          python-version: "3.14"
+          cache: "pip"
+      - name: "Byte-compile all Python code"
+        run: python -m compileall -q src custom_components
+      - name: "Structural checks (PLATFORMS, manifest, strings)"
+        run: python scripts/check_integration.py
+      - name: "Install Home Assistant and the local library"
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install homeassistant .
+      - name: "Import integration and all platform modules"
+        run: python scripts/check_imports.py
