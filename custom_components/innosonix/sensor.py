@@ -6,7 +6,6 @@ Sensor platform for the Innosonix integration."""
 from __future__ import annotations
 
 from homeassistant.components.sensor import (
-    SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
 )
@@ -23,19 +22,16 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
     SensorEntityDescription(
         key="model",
         translation_key="model",
-        device_class=SensorDeviceClass.MODEL,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="serial_number",
         translation_key="serial_number",
-        device_class=SensorDeviceClass.SERIAL_NUMBER,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
         key="software_revision",
         translation_key="software_revision",
-        device_class=SensorDeviceClass.SOFTWARE_VERSION,
         entity_category=EntityCategory.DIAGNOSTIC,
     ),
     SensorEntityDescription(
@@ -65,10 +61,17 @@ class InnosonixSensor(CoordinatorEntity[InnosonixCoordinator], SensorEntity):
     @property
     def native_value(self) -> str | int | None:
         """Return the current value."""
-        data = self.coordinator.data
-        if self.entity_description.key == "channel_count":
-            return len(data.channels)
-        return getattr(data.device, self.entity_description.key, None)
+        device = self.coordinator.data.device
+        key = self.entity_description.key
+        if key == "channel_count":
+            return len(self.coordinator.data.channels)
+        if key == "model":
+            return device.model_name
+        if key == "serial_number":
+            return device.serial
+        if key == "software_revision":
+            return device.sw_revision
+        return None
 
     @property
     def device_info(self) -> dict:
