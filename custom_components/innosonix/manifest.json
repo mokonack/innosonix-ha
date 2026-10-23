@@ -1,13 +1,17 @@
 {
   "domain": "innosonix",
   "name": "Innosonix Amplifier",
-  "version": "0.1.0",
-  "documentation": "https://github.com/mokonack/innosonix-ha",
-  "issue_tracker": "https://github.com/mokonack/innosonix-ha/issues",
-  "codeowners": ["@mokonack"],
+  "codeowners": [
+    "@mokonack"
+  ],
   "config_flow": true,
+  "documentation": "https://github.com/mokonack/innosonix-ha",
   "integration_type": "hub",
   "iot_class": "local_polling",
-  "requirements": ["innosonix==0.1.0"],
-  "quality_scale": "bronze"
+  "issue_tracker": "https://github.com/mokonack/innosonix-ha/issues",
+  "quality_scale": "bronze",
+  "requirements": [
+    "innosonix==0.1.1"
+  ],
+  "version": "0.1.1"
 }
