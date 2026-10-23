@@ -1,4 +1,7 @@
-"""Constants for the Innosonix integration."""
+"""SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2026 Mokonack
+
+Constants for the Innosonix integration."""
 
 from datetime import timedelta
 

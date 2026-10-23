@@ -1,8 +1,10 @@
-"""API client for the Innosonix MAXX / LP2 REST API.
+"""SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2026 Mokonack
 
-Python port of IC.Innosonix.Api.InnosonixApiClient. Read-only endpoints
-do not require authentication; write operations send the API key as the
-``token`` header (not implemented yet).
+API client for the Innosonix MAXX / LP2 REST API.
+
+Read-only endpoints do not require authentication; write operations send the
+API key as the ``token`` header (not implemented yet).
 """
 
 from __future__ import annotations

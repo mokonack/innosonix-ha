@@ -1,4 +1,7 @@
-"""Data update coordinator for the Innosonix integration."""
+"""SPDX-License-Identifier: Apache-2.0
+Copyright (c) 2026 Mokonack
+
+Data update coordinator for the Innosonix integration."""
 
 from __future__ import annotations
 
