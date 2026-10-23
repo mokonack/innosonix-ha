@@ -26,4 +26,6 @@ async def async_get_config_entry_diagnostics(
         },
         "device": asdict(data.device) if data else None,
         "channels": [asdict(channel) for channel in data.channels] if data else [],
+        "master_volume": data.master_volume if data else None,
+        "psu": asdict(data.psu) if data else None,
     }

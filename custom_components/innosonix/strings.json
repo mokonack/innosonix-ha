@@ -29,6 +29,15 @@
       },
       "channel_count": {
         "name": "Channel count"
+      },
+      "master_volume": {
+        "name": "Master volume"
+      },
+      "psu_voltage": {
+        "name": "PSU voltage"
+      },
+      "psu_load": {
+        "name": "PSU load"
       }
     },
     "binary_sensor": {
@@ -37,12 +46,19 @@
       },
       "device_warning": {
         "name": "Device warning"
-      },
+      }
+    },
+    "switch": {
       "amp": {
-        "name": "Amplifier enabled"
+        "name": "Amplifier"
       },
       "mute": {
-        "name": "Muted"
+        "name": "Mute"
+      }
+    },
+    "number": {
+      "volume": {
+        "name": "Volume"
       }
     }
   }

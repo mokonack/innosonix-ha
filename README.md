@@ -11,8 +11,10 @@ library published on PyPI.
 ## Features
 
 - Device info sensors: model, serial number, software revision, channel count
+- Device sensors: master volume, PSU voltage, PSU load
 - Device health: error / warning problem binary sensors
-- Per-channel binary sensors: amplifier enabled and mute state (all channels)
+- Per-channel switches: amplifier enable and mute (all channels)
+- Per-channel volume: number entity in dB (all channels)
 - Configurable API key (defaults to the key shipped with the amplifier)
 - Local polling, no cloud required
 
@@ -35,9 +37,13 @@ async def main():
         client = InnosonixApiClient("192.168.1.50", session=session)
         device = await client.get_device_infos()
         print(device.model_name, device.sw_revision)
+        print("master volume (dB):", await client.get_master_volume())
+        print("psu:", await client.get_psu_status())
         channels = await client.get_channels()
         for ch in channels:
-            print(ch.channel_id, ch.name, ch.amp_enabled, ch.muted)
+            print(ch.channel_id, ch.name, ch.amp_enabled, ch.muted, ch.volume)
+        await client.set_channel_muted(1, True)
+        await client.set_channel_volume(1, -6.0)
 
 asyncio.run(main())
 ```

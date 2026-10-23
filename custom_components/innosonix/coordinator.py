@@ -22,6 +22,7 @@ from innosonix import (
     InnosonixApiClient,
     InnosonixApiException,
     InnosonixChannel,
+    PsuStatus,
 )
 from .const import DOMAIN, SCAN_INTERVAL
 
@@ -34,6 +35,8 @@ class InnosonixData:
 
     device: DeviceInfo
     channels: list[InnosonixChannel]
+    master_volume: float
+    psu: PsuStatus
 
 
 class InnosonixCoordinator(DataUpdateCoordinator[InnosonixData]):
@@ -58,17 +61,29 @@ class InnosonixCoordinator(DataUpdateCoordinator[InnosonixData]):
         )
         self._client = client
 
+    @property
+    def client(self) -> InnosonixApiClient:
+        """Return the API client."""
+        return self._client
+
     async def _async_update_data(self) -> InnosonixData:
-        """Fetch device info and channels from the amplifier."""
+        """Fetch device info, channels, master volume, and PSU status."""
         try:
             device = await self._client.get_device_infos()
             channels = await self._client.get_channels()
+            master_volume = await self._client.get_master_volume()
+            psu = await self._client.get_psu_status()
         except InnosonixApiException as err:
             raise UpdateFailed(f"Error communicating with Innosonix API: {err}") from err
         except (aiohttp.ClientError, OSError) as err:
             raise UpdateFailed(f"Error communicating with Innosonix API: {err}") from err
 
-        return InnosonixData(device=device, channels=channels)
+        return InnosonixData(
+            device=device,
+            channels=channels,
+            master_volume=master_volume,
+            psu=psu,
+        )
 
 
 def get_device_info(coordinator: InnosonixCoordinator) -> dict:

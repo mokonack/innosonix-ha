@@ -12,7 +12,7 @@ from typing import Any, cast
 
 import aiohttp
 
-__version__ = "0.1.2"
+__version__ = "0.2.0"
 
 __all__ = [
     "DEFAULT_API_KEY",
@@ -20,6 +20,7 @@ __all__ = [
     "InnosonixApiException",
     "InnosonixChannel",
     "InnosonixApiClient",
+    "PsuStatus",
     "__version__",
 ]
 
@@ -61,6 +62,18 @@ class InnosonixChannel:
     name: str = ""
     amp_enabled: bool = False
     muted: bool = False
+    volume: float = 0.0
+
+
+@dataclass(slots=True)
+class PsuStatus:
+    """Power supply status as reported by GET /status/device/psu."""
+
+    load_pct: int = 0
+    voltage_v: float = 0.0
+    reduction_db: float = 0.0
+    fan_speed_pct: int = 0
+    dc_ok: bool = True
 
 
 def _value(payload: Any, default: Any = None) -> Any:
@@ -150,6 +163,46 @@ class InnosonixApiClient:
                     name=str(_value(item.get("name"), "")),
                     amp_enabled=bool(_value(item.get("ampenable"), False)),
                     muted=bool(_value(dsp.get("mute"), False)),
+                    volume=float(_value(dsp.get("volume"), 0.0)),
                 )
             )
         return channels
+
+    async def _put(self, path: str, value: Any) -> None:
+        """PUT ``{"value": ...}`` to ``path`` with the API key header."""
+        url = f"{self._base_url}{path.lstrip('/')}"
+        headers = {"token": self._api_key}
+        async with self._session.put(url, json={"value": value}, headers=headers) as response:
+            body = await response.text()
+            if not response.ok:
+                raise InnosonixApiException(path, response.status, body)
+
+    async def get_master_volume(self) -> float:
+        """Get the device master volume in dB (GET /settings/device/dsp/volume)."""
+        data = await self._get("settings/device/dsp/volume")
+        return float(_value(data, 0.0))
+
+    async def get_psu_status(self) -> PsuStatus:
+        """Get the power supply status (GET /status/device/psu)."""
+        data = cast(dict[str, Any], await self._get("status/device/psu"))
+        voltages = [float(v) for v in data.get("primary_voltage") or []]
+        dc_ok = [bool(v) for v in data.get("dc_ok") or []]
+        return PsuStatus(
+            load_pct=int(data.get("load", 0)),
+            voltage_v=voltages[0] if voltages else 0.0,
+            reduction_db=float(data.get("reduction", 0.0)),
+            fan_speed_pct=int(data.get("fan_speed", 0)),
+            dc_ok=all(dc_ok) if dc_ok else True,
+        )
+
+    async def set_channel_amp_enabled(self, channel_id: int, enabled: bool) -> None:
+        """Enable or disable the channel amplifier (PUT /settings/channel/{id}/ampenable)."""
+        await self._put(f"settings/channel/{channel_id}/ampenable", enabled)
+
+    async def set_channel_muted(self, channel_id: int, muted: bool) -> None:
+        """Mute or unmute a channel (PUT /settings/channel/{id}/dsp/mute)."""
+        await self._put(f"settings/channel/{channel_id}/dsp/mute", muted)
+
+    async def set_channel_volume(self, channel_id: int, volume: float) -> None:
+        """Set the channel volume in dB (PUT /settings/channel/{id}/dsp/volume)."""
+        await self._put(f"settings/channel/{channel_id}/dsp/volume", volume)

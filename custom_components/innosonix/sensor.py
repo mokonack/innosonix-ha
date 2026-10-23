@@ -6,10 +6,13 @@ Sensor platform for the Innosonix integration."""
 from __future__ import annotations
 
 from homeassistant.components.sensor import (
+    SensorDeviceClass,
     SensorEntity,
     SensorEntityDescription,
+    SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import PERCENTAGE, VOLTAGE
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -38,6 +41,27 @@ SENSOR_TYPES: tuple[SensorEntityDescription, ...] = (
         key="channel_count",
         translation_key="channel_count",
     ),
+    SensorEntityDescription(
+        key="master_volume",
+        translation_key="master_volume",
+        native_unit_of_measurement="dB",
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="psu_voltage",
+        translation_key="psu_voltage",
+        device_class=SensorDeviceClass.VOLTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=VOLTAGE,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+    SensorEntityDescription(
+        key="psu_load",
+        translation_key="psu_load",
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=PERCENTAGE,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
 )
 
 
@@ -59,7 +83,7 @@ class InnosonixSensor(CoordinatorEntity[InnosonixCoordinator], SensorEntity):
         )
 
     @property
-    def native_value(self) -> str | int | None:
+    def native_value(self) -> str | int | float | None:
         """Return the current value."""
         device = self.coordinator.data.device
         key = self.entity_description.key
@@ -71,6 +95,12 @@ class InnosonixSensor(CoordinatorEntity[InnosonixCoordinator], SensorEntity):
             return device.serial
         if key == "software_revision":
             return device.sw_revision
+        if key == "master_volume":
+            return self.coordinator.data.master_volume
+        if key == "psu_voltage":
+            return self.coordinator.data.psu.voltage_v
+        if key == "psu_load":
+            return self.coordinator.data.psu.load_pct
         return None
 
     @property

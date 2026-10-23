@@ -9,7 +9,12 @@ from homeassistant.const import Platform
 
 DOMAIN = "innosonix"
 
-PLATFORMS = [Platform.BINARY_SENSOR, Platform.SENSOR]
+PLATFORMS = [
+    Platform.BINARY_SENSOR,
+    Platform.NUMBER,
+    Platform.SENSOR,
+    Platform.SWITCH,
+]
 
 CONF_HOST = "host"
 CONF_API_KEY = "api_key"
