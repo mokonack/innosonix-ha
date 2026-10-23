@@ -1,9 +1,12 @@
 # Innosonix Amplifier integration for Home Assistant
 
 [![My Home Assistant](https://my.home-assistant.io/badge.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=innosonix)
+[![PyPI](https://img.shields.io/pypi/v/innosonix)](https://pypi.org/project/innosonix/)
 
-A custom integration for Home Assistant that reads status information from
-Innosonix amplifiers (MAXX series) over the built-in REST API.
+A Home Assistant integration that reads status information from Innosonix
+amplifiers (MAXX series) over the built-in REST API, built on top of the
+standalone [`innosonix`](https://pypi.org/project/innosonix/) Python client
+library published on PyPI.
 
 ## Features
 
@@ -12,6 +15,35 @@ Innosonix amplifiers (MAXX series) over the built-in REST API.
 - Per-channel binary sensors: amplifier enabled and mute state (all channels)
 - Configurable API key (defaults to the key shipped with the amplifier)
 - Local polling, no cloud required
+
+## The Python client library
+
+The `innosonix` package (`src/innosonix`) is a standalone async client for the
+Innosonix REST API and works independently of Home Assistant:
+
+```bash
+pip install innosonix
+```
+
+```python
+import asyncio
+import aiohttp
+from innosonix import InnosonixApiClient
+
+async def main():
+    async with aiohttp.ClientSession() as session:
+        client = InnosonixApiClient("192.168.1.50", session=session)
+        device = await client.get_device_infos()
+        print(device.model_name, device.sw_revision)
+        channels = await client.get_channels()
+        for ch in channels:
+            print(ch.channel_id, ch.name, ch.amp_enabled, ch.muted)
+
+asyncio.run(main())
+```
+
+The Home Assistant integration lists the library as a requirement, so Home
+Assistant installs it from PyPI automatically during setup.
 
 ## Installation
 

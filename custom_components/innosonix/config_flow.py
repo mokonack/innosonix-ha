@@ -12,8 +12,8 @@ import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResult
+from innosonix import InnosonixApiClient, InnosonixApiException
 
-from .api import InnosonixApiClient, InnosonixApiException
 from .const import CONF_API_KEY, CONF_HOST, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)

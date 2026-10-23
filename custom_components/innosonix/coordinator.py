@@ -17,7 +17,7 @@ from homeassistant.helpers.update_coordinator import (
     UpdateFailed,
 )
 
-from .api import (
+from innosonix import (
     DeviceInfo,
     InnosonixApiClient,
     InnosonixApiException,

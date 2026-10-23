@@ -11,8 +11,8 @@ import aiohttp
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from innosonix import InnosonixApiClient
 
-from .api import InnosonixApiClient
 from .const import (
     CONF_API_KEY,
     CONF_HOST,

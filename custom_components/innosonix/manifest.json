@@ -8,6 +8,7 @@
   "config_flow": true,
   "integration_type": "hub",
   "iot_class": "local_polling",
-  "categories": ["media_entertainment.speakers_audio"],
+  "requirements": ["innosonix==0.1.0"],
+  "categories": ["media_entertainment"],
   "quality_scale": "bronze"
 }
