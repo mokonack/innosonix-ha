@@ -78,3 +78,33 @@ Assistant.
 ## Requirements
 
 - Home Assistant 2024.12 or newer
+
+## Releasing
+
+This repository ships two artifacts that are released **independently**:
+
+- **The Home Assistant integration** (`custom_components/innosonix`) — versioned
+  in `manifest.json`, distributed via HACS.
+- **The `innosonix` client library** (`src/innosonix`) — versioned in
+  `pyproject.toml`, distributed on PyPI.
+
+The only link between them is the integration's `requirements`, which must
+point at an `innosonix` version that is already published on PyPI.
+
+### Releasing the integration
+
+1. On `main`, bump `version` in `custom_components/innosonix/manifest.json`
+   (e.g. `0.3.0` → `0.3.1`). If the change relies on a new library feature,
+   also bump `requirements` to that published `innosonix` version.
+2. Create a GitHub **Release** tagged `vX.Y.Z` matching the manifest version.
+   HACS users are then offered the update. This does **not** publish to PyPI.
+
+### Releasing the library
+
+1. On `main`, make the client changes and bump `version` in `pyproject.toml`.
+2. Push a tag: `git tag lib-vX.Y.Z && git push origin lib-vX.Y.Z`.
+   The *Publish to PyPI* workflow runs on `lib-v*` tags and publishes the
+   library.
+
+When an integration release depends on a newly released library, point its
+`requirements` at that `innosonix` version before cutting the `v*` release.

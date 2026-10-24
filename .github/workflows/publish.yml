@@ -1,9 +1,13 @@
 name: "Publish to PyPI"
 
+# The `innosonix` client library is published independently of integration
+# releases. Integration releases are `v*` GitHub Releases (consumed by HACS)
+# and never publish to PyPI. To publish a new library version, bump `version`
+# in pyproject.toml and push a `lib-vX.Y.Z` tag; this workflow fires on that tag.
 on:
-  release:
-    types:
-      - published
+  push:
+    tags:
+      - "lib-v*"
 
 jobs:
   publish:
