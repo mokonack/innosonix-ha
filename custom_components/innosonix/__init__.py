@@ -11,6 +11,7 @@ import aiohttp
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import device_registry as dr
 from innosonix import InnosonixApiClient
 
 from .const import (
@@ -22,7 +23,7 @@ from .const import (
     DOMAIN,
     PLATFORMS,
 )
-from .coordinator import InnosonixCoordinator
+from .coordinator import InnosonixCoordinator, get_device_info
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,6 +38,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     )
     coordinator = InnosonixCoordinator(hass, entry=entry, client=client)
     await coordinator.async_config_entry_first_refresh()
+
+    # Register the amplifier device before setting up the platforms so the
+    # per-channel sub-devices can be linked to it as their parent.
+    device_registry = dr.async_get(hass)
+    amplifier_device = device_registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        **get_device_info(coordinator),
+    )
+    coordinator.parent_device_id = amplifier_device.id
 
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
         DATA_CLIENT: client,

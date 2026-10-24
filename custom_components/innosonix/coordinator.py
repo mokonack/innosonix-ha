@@ -24,7 +24,7 @@ from innosonix import (
     InnosonixChannel,
     PsuStatus,
 )
-from .const import DOMAIN, SCAN_INTERVAL
+from .const import DOMAIN, MANUFACTURER, SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -60,6 +60,7 @@ class InnosonixCoordinator(DataUpdateCoordinator[InnosonixData]):
             update_interval=SCAN_INTERVAL,
         )
         self._client = client
+        self.parent_device_id: str | None = None
 
     @property
     def client(self) -> InnosonixApiClient:
@@ -87,13 +88,16 @@ class InnosonixCoordinator(DataUpdateCoordinator[InnosonixData]):
 
 
 def get_device_info(coordinator: InnosonixCoordinator) -> dict:
-    """Return the device info dict for entities."""
+    """Return the device info dict for amplifier-level entities."""
     device = coordinator.data.device
     entry = coordinator.config_entry
+    name = (
+        f"{MANUFACTURER} {device.hostname}" if device.hostname else MANUFACTURER
+    )
     return {
         "identifiers": {(DOMAIN, entry.entry_id)},
-        "name": "Innosonix",
-        "manufacturer": "Innosonix",
+        "name": name,
+        "manufacturer": MANUFACTURER,
         "model": device.model_name,
         "sw_version": device.sw_revision,
         "serial_number": device.serial,

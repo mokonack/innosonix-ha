@@ -8,6 +8,7 @@ from datetime import timedelta
 from homeassistant.const import Platform
 
 DOMAIN = "innosonix"
+MANUFACTURER = "Innosonix"
 
 PLATFORMS = [
     Platform.BINARY_SENSOR,

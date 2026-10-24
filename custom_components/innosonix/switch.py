@@ -12,12 +12,12 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from innosonix import InnosonixApiException
 
-from .coordinator import InnosonixCoordinator, get_device_info
+from .coordinator import InnosonixCoordinator
 from .const import DATA_COORDINATOR, DOMAIN
+from .entity import InnosonixChannelEntity
 
 SWITCH_TYPES: tuple[SwitchEntityDescription, ...] = (
     SwitchEntityDescription(
@@ -31,18 +31,13 @@ SWITCH_TYPES: tuple[SwitchEntityDescription, ...] = (
 )
 
 
-class InnosonixChannelSwitch(
-    CoordinatorEntity[InnosonixCoordinator], SwitchEntity
-):
+class InnosonixChannelSwitch(InnosonixChannelEntity, SwitchEntity):
     """Per-channel amplifier enable / mute switch."""
-
-    _attr_has_entity_name = True
 
     def __init__(
         self,
         coordinator: InnosonixCoordinator,
         channel_id: int,
-        name: str,
         description: SwitchEntityDescription,
     ) -> None:
         """Initialize the switch.
@@ -51,19 +46,9 @@ class InnosonixChannelSwitch(
         """
         super().__init__(coordinator)
         self.entity_description = description
-        self._channel_id = channel_id
-        self._attr_name = f"{name} amplifier" if description.key == "amp" else f"{name} mute"
+        self.channel_id = channel_id
         self._attr_unique_id = (
             f"{coordinator.config_entry.entry_id}-ch{channel_id}-{description.key}"
-        )
-
-    @property
-    def _channel(self):
-        """Return the channel data for this entity."""
-        return next(
-            channel
-            for channel in self.coordinator.data.channels
-            if channel.channel_id == self._channel_id
         )
 
     @property
@@ -85,23 +70,18 @@ class InnosonixChannelSwitch(
         try:
             if self.entity_description.key == "amp":
                 await self.coordinator.client.set_channel_amp_enabled(
-                    self._channel_id, value
+                    self.channel_id, value
                 )
             else:
                 await self.coordinator.client.set_channel_muted(
-                    self._channel_id, value
+                    self.channel_id, value
                 )
         except (InnosonixApiException, aiohttp.ClientError, OSError) as err:
             raise HomeAssistantError(
                 f"Failed to set {self.entity_description.key} on channel "
-                f"{self._channel_id}: {err}"
+                f"{self.channel_id}: {err}"
             ) from err
         await self.coordinator.async_request_refresh()
-
-    @property
-    def device_info(self) -> dict:
-        """Return device information."""
-        return get_device_info(self.coordinator)
 
 
 async def async_setup_entry(
@@ -112,9 +92,7 @@ async def async_setup_entry(
     """Set up Innosonix switches from a config entry."""
     coordinator = hass.data[DOMAIN][entry.entry_id][DATA_COORDINATOR]
     entities = [
-        InnosonixChannelSwitch(
-            coordinator, channel.channel_id, channel.name, description
-        )
+        InnosonixChannelSwitch(coordinator, channel.channel_id, description)
         for channel in coordinator.data.channels
         for description in SWITCH_TYPES
     ]
