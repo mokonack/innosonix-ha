@@ -32,6 +32,7 @@ class InnosonixChannelVolume(InnosonixChannelEntity, NumberEntity):
     _attr_native_max_value = VOLUME_MAX
     _attr_native_step = VOLUME_STEP
     _attr_native_unit_of_measurement = "dB"
+    _attr_icon = "mdi:volume-high"
 
     def __init__(
         self,
