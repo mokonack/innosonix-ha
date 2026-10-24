@@ -57,6 +57,13 @@ class InnosonixChannelSwitch(InnosonixChannelEntity, SwitchEntity):
         channel = self._channel
         return channel.amp_enabled if self.entity_description.key == "amp" else channel.muted
 
+    @property
+    def icon(self) -> str:
+        """Return an icon reflecting the switch's current state."""
+        if self.entity_description.key == "amp":
+            return "mdi:volume-high" if self.is_on else "mdi:volume-variant-off"
+        return "mdi:volume-mute" if self.is_on else "mdi:volume-high"
+
     async def async_turn_on(self, **kwargs: object) -> None:
         """Enable the amp / mute the channel."""
         await self._async_set(True)
