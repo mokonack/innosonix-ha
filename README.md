@@ -1,6 +1,6 @@
 # Innosonix Amplifier integration for Home Assistant
 
-[![My Home Assistant](https://my.home-assistant.io/badge.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=innosonix)
+[![My Home Assistant](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=innosonix)
 [![PyPI](https://img.shields.io/pypi/v/innosonix)](https://pypi.org/project/innosonix/)
 
 A Home Assistant integration that reads status information from Innosonix
