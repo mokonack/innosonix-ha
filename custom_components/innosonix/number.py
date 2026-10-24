@@ -24,6 +24,12 @@ VOLUME_MIN = -72.0
 VOLUME_MAX = 24.0
 VOLUME_STEP = 0.1
 
+# Thresholds (dB) that split the full scale into thirds for the icon:
+# quieter than LOW_ICON_BELOW -> mdi:volume-low,
+# quieter than MEDIUM_ICON_BELOW -> mdi:volume-medium, otherwise mdi:volume-high.
+LOW_ICON_BELOW = -40.0
+MEDIUM_ICON_BELOW = -8.0
+
 
 class InnosonixChannelVolume(InnosonixChannelEntity, NumberEntity):
     """Per-channel volume number entity (dB)."""
@@ -32,7 +38,6 @@ class InnosonixChannelVolume(InnosonixChannelEntity, NumberEntity):
     _attr_native_max_value = VOLUME_MAX
     _attr_native_step = VOLUME_STEP
     _attr_native_unit_of_measurement = "dB"
-    _attr_icon = "mdi:volume-high"
 
     def __init__(
         self,
@@ -49,6 +54,16 @@ class InnosonixChannelVolume(InnosonixChannelEntity, NumberEntity):
     def native_value(self) -> float:
         """Return the current volume in dB."""
         return self._channel.volume
+
+    @property
+    def icon(self) -> str:
+        """Return an icon reflecting the current volume level."""
+        volume = self._channel.volume
+        if volume < LOW_ICON_BELOW:
+            return "mdi:volume-low"
+        if volume < MEDIUM_ICON_BELOW:
+            return "mdi:volume-medium"
+        return "mdi:volume-high"
 
     async def async_set_native_value(self, value: float) -> None:
         """Set the channel volume on the device and refresh the coordinator."""
